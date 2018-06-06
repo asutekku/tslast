@@ -1,0 +1,12 @@
+{ "name": "tslast",
+  "description": "Last.fm CLI client written in typescript",
+  "version": "0.1",
+  "devDependencies": {
+    "request": "~2.87.0",
+    "typescript": "~2.9.1"
+  },
+  "scripts": {
+    "prepare": "tsc tslast.ts"
+  },
+  "main": "tslast.js"
+}
