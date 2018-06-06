@@ -23,6 +23,7 @@ As of now, it's only possible to query some user stats with the client.
 User:
 -ui username : Get user information
 -uf username : Get the 5 most recent friends
+-ul username : Get the 5 most recent loved friends
 -ur username : Get 5 most recent tracks
 -ut username : Get 5 most played tracks
 ```

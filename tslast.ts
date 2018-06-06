@@ -20,7 +20,7 @@ function parseArgs(args) {
     let uname: string = args[1];
     let count: number = args[2] !== undefined ? parseInt(args[2]) : 5;
     let meth: string = getMethod(args);
-    return { username: uname, method: meth ,count:count};
+    return { username: uname, method: meth, count: count };
 }
 
 function getMethod(args: string[]) {
@@ -52,7 +52,7 @@ function getAction(range: string, input: string) {
             f: 'getfriends',
             i: 'getinfo',
             l: 'getlovedtracks',
-            p: 'getpersonaltracks',
+            p: 'getpersonaltags',
             r: 'getrecenttracks',
             a: 'gettopalbums',
             A: 'gettopartists',
@@ -79,13 +79,19 @@ function getQuery(method: string, user: string, count?: number) {
             Calls.getRecentTracksUser(method, user, count);
             break;
         case 'user.getfriends':
-            Calls.getFriendsUser(method, user,count);
+            Calls.getFriendsUser(method, user, count);
             break;
         case 'user.gettoptracks':
-            Calls.getTopTracksUser(method, user,count);
+            Calls.getTopTracksUser(method, user, count);
+            break;
+        case 'user.getlovedtracks':
+            Calls.getLovedTracksUser(method, user, count);
             break;
         case 'user.getinfo':
             Calls.getInfoUser(method, user);
+            break;
+        default:
+            console.log('Command not found');
             break;
     }
 }
@@ -109,7 +115,28 @@ class Calls {
                     console.log(`>${tracks[i].toString()} ${nowPlaying}`);
                 }
             } catch (err) {
-                console.log('User not found');
+                console.log(`User not found: ${user}`);
+            }
+        });
+    }
+
+    static getLovedTracksUser(method: string, user: string, limit?: number) {
+        const api_call: string = api_string_builder(method, user);
+        get_JSON(api_call).then(function(data) {
+            try {
+                const tracks = data.lovedtracks.track.map(obj => {
+                    return new Track(
+                        obj.name,
+                        obj.artist.name,
+                        'unknown',
+                        false
+                    );
+                });
+                for (let i = 0; i < limit; i++) {
+                    console.log(`>${tracks[i].toString()}`);
+                }
+            } catch (err) {
+                console.log(`User not found: ${user}`);
             }
         });
     }
@@ -160,9 +187,13 @@ class Calls {
             try {
                 for (let i = 0; i < limit; i++) {
                     console.log(data.friends.user[i].name);
-                    console.log(`  Real name: ${data.friends.user[i].realname}`);
+                    console.log(
+                        `  Real name: ${data.friends.user[i].realname}`
+                    );
                     console.log(`  Country: ${data.friends.user[i].country}`);
-                    console.log(`  Playcount: ${data.friends.user[i].playcount}`);
+                    console.log(
+                        `  Playcount: ${data.friends.user[i].playcount}`
+                    );
                 }
             } catch (err) {
                 console.log(`User not found: ${user}`);
