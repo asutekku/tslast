@@ -14,12 +14,15 @@ npm install
 ## Commands
 TSlast is designed to be as easy to use as possible. You need to only provide two arguments for the client to print the information. For an example, the command `tslast -ur asutekku` prints the 5 most recent tracks played by the user asutekku.
 
-The first argument consists of two parts and starts with a `-`. The first character defines the range and the second one defines the action assigned to that range. As of now, it's only possible to query some user stats with the client.
+The first argument consists of two parts and starts with a `-`. The first character defines the range and the second one defines the action assigned to that range. The client returns 5 items as of default, but y adding a number after the username you can control the amount of results returned. 
+
+As of now, it's only possible to query some user stats with the client.
 
 ### Actions
 ```
 User:
 -ui username : Get user information
+-uf username : Get the 5 most recent friends
 -ur username : Get 5 most recent tracks
 -ut username : Get 5 most played tracks
 ```

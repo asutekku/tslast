@@ -12,13 +12,15 @@ function main() {
     const arguments = parseArgs(cli_arg);
     const method = arguments.method;
     const username = arguments.username;
-    getQuery(method, username);
+    const count = arguments.count;
+    getQuery(method, username, count);
 }
 
 function parseArgs(args) {
     let uname: string = args[1];
+    let count: number = args[2] !== undefined ? parseInt(args[2]) : 5;
     let meth: string = getMethod(args);
-    return { username: uname, method: meth };
+    return { username: uname, method: meth ,count:count};
 }
 
 function getMethod(args: string[]) {
@@ -71,13 +73,16 @@ function get_JSON(url: string) {
     );
 }
 
-function getQuery(method: string, user: string) {
+function getQuery(method: string, user: string, count?: number) {
     switch (method) {
         case 'user.getrecenttracks':
-            Calls.getRecentTracksUser(method, user);
+            Calls.getRecentTracksUser(method, user, count);
+            break;
+        case 'user.getfriends':
+            Calls.getFriendsUser(method, user,count);
             break;
         case 'user.gettoptracks':
-            Calls.getTopTracksUser(method, user);
+            Calls.getTopTracksUser(method, user,count);
             break;
         case 'user.getinfo':
             Calls.getInfoUser(method, user);
@@ -86,7 +91,7 @@ function getQuery(method: string, user: string) {
 }
 
 class Calls {
-    static getRecentTracksUser(method: string, user: string, limit?: string) {
+    static getRecentTracksUser(method: string, user: string, limit?: number) {
         const api_call: string = api_string_builder(method, user);
         get_JSON(api_call).then(function(data) {
             try {
@@ -98,8 +103,7 @@ class Calls {
                         obj.hasOwnProperty('@attr') ? true : false
                     );
                 });
-                const count = isNaN(parseInt(limit)) ? 5 : parseInt(limit);
-                for (let i = 0; i < count; i++) {
+                for (let i = 0; i < limit; i++) {
                     let nowPlaying =
                         tracks[i].nowPlaying == true ? '[Now playing]' : '';
                     console.log(`>${tracks[i].toString()} ${nowPlaying}`);
@@ -110,7 +114,7 @@ class Calls {
         });
     }
 
-    static getTopTracksUser(method: string, user: string, limit?: string) {
+    static getTopTracksUser(method: string, user: string, limit?: number) {
         const api_call: string = api_string_builder(method, user);
         get_JSON(api_call).then(function(data) {
             try {
@@ -119,8 +123,7 @@ class Calls {
                     track.playcount = obj.playcount;
                     return track;
                 });
-                const count = isNaN(parseInt(limit)) ? 5 : parseInt(limit);
-                for (let i = 0; i < count; i++) {
+                for (let i = 0; i < limit; i++) {
                     console.log(
                         `>${tracks[i].toString()} [${
                             tracks[i].playcount
@@ -133,7 +136,7 @@ class Calls {
         });
     }
 
-    static getInfoUser(method: string, user: string, limit?: string) {
+    static getInfoUser(method: string, user: string) {
         const api_call: string = api_string_builder(method, user);
         get_JSON(api_call).then(function(data) {
             try {
@@ -145,6 +148,22 @@ class Calls {
                     data.user.realname
                 );
                 user.toString();
+            } catch (err) {
+                console.log(`User not found: ${user}`);
+            }
+        });
+    }
+
+    static getFriendsUser(method: string, user: string, limit?: number) {
+        const api_call: string = api_string_builder(method, user);
+        get_JSON(api_call).then(function(data) {
+            try {
+                for (let i = 0; i < limit; i++) {
+                    console.log(data.friends.user[i].name);
+                    console.log(`  Real name: ${data.friends.user[i].realname}`);
+                    console.log(`  Country: ${data.friends.user[i].country}`);
+                    console.log(`  Playcount: ${data.friends.user[i].playcount}`);
+                }
             } catch (err) {
                 console.log(`User not found: ${user}`);
             }
