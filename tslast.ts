@@ -5,7 +5,7 @@ const cli_arg = process.argv.slice(2);
 let api_url: string = `http://ws.audioscrobbler.com/2.0/?method=`;
 
 const config = {
-    api_key: '429b2b5ad60a619b6762518140652943'
+    api_key: 'redacted'
 };
 
 function main() {
